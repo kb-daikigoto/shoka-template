@@ -1,0 +1,13 @@
+{
+  "_comment": "派生インデックス。真実は index.html の ARTICLES。これは /org が再生成する検索用カタログで、/update がワード解決に使う（手で編集しない）。記事を作ると articles に増えていく。",
+  "generatedBy": "/org",
+  "shelves": {
+    "db": "データの土台 (Database & Query)",
+    "backend": "バックエンド & API (Backend & API)",
+    "design": "ソフトウェア設計 (Software Design)",
+    "infra": "クラウド & インフラ (Cloud & Infra)",
+    "dist": "分散データシステム (Distributed Data)",
+    "tools": "開発ツール (Dev Tools)"
+  },
+  "articles": []
+}

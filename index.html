@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shoka ― My Learning Library</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Kaisei+Tokumin:wght@500;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=Spline+Sans+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#f3ead6;--paper2:#e8dcc0;--card:#fbf5e7;
+  --ink:#352a1b;--ink-soft:#6c5d45;--ink-dim:#9a8a6e;--line:#ddccac;
+  --brass:#9c7820;--brass-deep:#6f5413;--green:#3f5d44;--oxblood:#8a3a2c;
+  --mono:'Spline Sans Mono',ui-monospace,monospace;--disp:'Kaisei Tokumin',serif;--sans:'Zen Kaku Gothic New',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:var(--sans);color:var(--ink);background-color:var(--paper);
+  background-image:
+    radial-gradient(circle at 18% 10%,rgba(156,120,32,.07),transparent 42%),
+    radial-gradient(circle at 85% 6%,rgba(63,93,68,.06),transparent 40%),
+    radial-gradient(rgba(53,42,27,.05) .8px,transparent .8px);
+  background-size:auto,auto,16px 16px;background-attachment:fixed;
+  line-height:1.8;font-size:16px;-webkit-font-smoothing:antialiased;letter-spacing:.01em;min-height:100vh;
+}
+.shell{max-width:1120px;margin:0 auto;padding:0 clamp(18px,5vw,48px) 100px;}
+
+header{padding:60px 0 24px;}
+.crest{font-family:var(--mono);font-size:12px;letter-spacing:.22em;color:var(--brass-deep);text-transform:uppercase;}
+h1{font-family:var(--disp);font-weight:700;font-size:clamp(36px,6.5vw,64px);line-height:1.12;margin:14px 0 0;letter-spacing:.02em;}
+h1 .sub{display:block;font-size:clamp(14px,2.3vw,19px);font-family:var(--mono);font-weight:400;color:var(--ink-soft);letter-spacing:.14em;margin-top:10px;}
+.tagline{font-size:16.5px;color:var(--ink-soft);max-width:580px;margin-top:16px;}
+.stats{display:flex;flex-wrap:wrap;gap:28px;margin-top:22px;}
+.stat .num{font-family:var(--disp);font-size:28px;font-weight:700;color:var(--brass-deep);line-height:1;}
+.stat .lbl{font-family:var(--mono);font-size:11px;letter-spacing:.09em;color:var(--ink-soft);margin-top:4px;text-transform:uppercase;}
+
+.toolbar{position:sticky;top:0;z-index:50;margin:26px 0 6px;padding:14px 0 12px;
+  background:linear-gradient(var(--paper),var(--paper) 78%,rgba(243,234,214,0));backdrop-filter:blur(2px);}
+.searchrow{display:flex;gap:10px;align-items:center;flex-wrap:wrap;}
+.search{flex:1;min-width:220px;display:flex;align-items:center;gap:9px;background:var(--card);
+  border:1px solid var(--line);border-radius:11px;padding:10px 14px;box-shadow:0 2px 0 var(--paper2);}
+.search svg{flex:0 0 auto;}
+.search input{border:none;background:transparent;outline:none;font-family:var(--sans);font-size:15px;color:var(--ink);width:100%;}
+.search input::placeholder{color:var(--ink-dim);}
+.count{font-family:var(--mono);font-size:12px;color:var(--ink-soft);white-space:nowrap;}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:11px;}
+.chip{font-family:var(--mono);font-size:12px;border:1px solid var(--line);background:var(--card);
+  color:var(--ink-soft);padding:5px 12px;border-radius:20px;cursor:pointer;transition:.15s;user-select:none;}
+.chip:hover{border-color:var(--brass);color:var(--ink);}
+.chip.on{background:var(--green);border-color:var(--green);color:#fff;}
+.chip .c{opacity:.7;margin-left:5px;}
+.activetag{font-family:var(--mono);font-size:12px;color:var(--oxblood);margin-top:10px;display:none;}
+.activetag b{background:rgba(138,58,44,.1);padding:2px 8px;border-radius:6px;}
+.activetag .x{cursor:pointer;text-decoration:underline;margin-left:8px;}
+
+.shelf{margin-top:40px;}
+.shelf-head{display:flex;align-items:baseline;gap:13px;border-bottom:2px solid var(--ink);padding-bottom:7px;margin-bottom:20px;}
+.shelf-no{font-family:var(--mono);font-size:12px;color:#fff;background:var(--green);padding:3px 9px;border-radius:5px;letter-spacing:.04em;}
+.shelf-head h2{font-family:var(--disp);font-size:23px;font-weight:700;}
+.shelf-head .ssub{font-family:var(--mono);font-size:12px;color:var(--ink-dim);margin-left:auto;}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:16px;}
+
+.book{position:relative;display:flex;background:var(--card);border:1px solid var(--line);border-radius:10px;
+  overflow:hidden;text-decoration:none;color:inherit;box-shadow:0 2px 0 var(--paper2),0 8px 18px rgba(53,42,27,.06);
+  transition:transform .16s ease,box-shadow .16s ease;}
+.book:hover{transform:translateY(-4px);box-shadow:0 4px 0 var(--paper2),0 16px 28px rgba(53,42,27,.13);}
+.spine{width:9px;flex:0 0 9px;background:var(--sp,#9c7820);}
+.book-body{padding:15px 17px 14px;flex:1;min-width:0;}
+.cat{font-family:var(--mono);font-size:10.5px;letter-spacing:.06em;color:var(--sp,#9c7820);text-transform:uppercase;}
+.book h3{font-family:var(--disp);font-size:18px;font-weight:700;line-height:1.34;margin:4px 0 3px;}
+.book .bk{font-size:12px;color:var(--ink-dim);font-family:var(--mono);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.book .dsc{font-size:13px;color:var(--ink-soft);margin:8px 0 10px;line-height:1.65;}
+.lv{display:inline-flex;align-items:center;gap:5px;font-family:var(--mono);font-size:10.5px;background:var(--paper);
+  border:1px solid var(--line);padding:2px 8px;border-radius:20px;color:var(--ink-soft);}
+.lv b{color:var(--brass-deep);}
+.tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:10px;}
+.tag{font-family:var(--mono);font-size:10px;color:var(--ink-soft);background:var(--paper2);padding:2px 7px;border-radius:5px;cursor:pointer;transition:.13s;}
+.tag:hover{background:var(--brass);color:#fff;}
+.open{display:inline-block;margin-top:11px;font-family:var(--mono);font-size:11.5px;color:var(--sp,#9c7820);font-weight:500;}
+.badge-vol{position:absolute;top:11px;right:13px;font-family:var(--mono);font-size:9.5px;color:var(--ink-dim);
+  border:1px solid var(--line);border-radius:20px;padding:2px 7px;background:var(--paper);}
+.empty{text-align:center;padding:60px 20px;color:var(--ink-dim);font-family:var(--mono);font-size:14px;}
+
+.slips{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:60px;}
+.slip{background:var(--card);border:1px dashed var(--brass);border-radius:12px;padding:22px 24px;position:relative;}
+.slip.upd{border-color:var(--green);}
+.stamp{position:absolute;top:16px;right:18px;font-family:var(--mono);font-size:10px;letter-spacing:.12em;
+  border:2px solid var(--oxblood);color:var(--oxblood);padding:3px 8px;border-radius:5px;transform:rotate(6deg);opacity:.85;}
+.slip h3{font-family:var(--disp);font-size:19px;font-weight:700;margin-bottom:4px;}
+.slip p{font-size:13.5px;color:var(--ink-soft);margin:8px 0;}
+.cmd{font-family:var(--mono);font-size:13px;background:var(--ink);color:#f3ead6;padding:9px 13px;border-radius:8px;display:block;margin:12px 0;overflow-x:auto;white-space:nowrap;}
+.cmd .v{color:#e0b46a;}
+.slip ol{margin:8px 0 0 18px;font-size:13px;color:var(--ink-soft);}
+.slip ol li{margin:4px 0;}
+.note{font-family:var(--mono);font-size:11.5px;color:var(--ink-dim);margin-top:10px;}
+
+footer{margin-top:60px;border-top:1px solid var(--line);padding-top:22px;font-size:13px;color:var(--ink-soft);}
+footer b{color:var(--brass-deep);}
+footer .ff{font-family:var(--mono);font-size:11px;color:var(--ink-dim);margin-top:10px;}
+
+.reveal{opacity:0;transform:translateY(14px);transition:opacity .5s ease,transform .5s ease;}
+.reveal.in{opacity:1;transform:none;}
+@media(max-width:680px){.slips{grid-template-columns:1fr;}.stats{gap:20px;}}
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <header>
+    <div class="crest">◈ Personal Knowledge Stacks</div>
+    <h1>Shoka<span class="sub">My Learning Library</span></h1>
+    <p class="tagline">学んだ技術を一冊ずつ書架に収めて育てる、あなただけの蔵書室。Claude に頼んで記事を増やし、検索や分野で絞り込んで読み返せます。</p>
+    <div class="stats">
+      <div class="stat"><span class="num" id="st-count">—</span><span class="lbl">蔵書(記事)</span></div>
+      <div class="stat"><span class="num" id="st-shelf">—</span><span class="lbl">分野(棚)</span></div>
+      <div class="stat"><span class="num" id="st-upd">—</span><span class="lbl">最終更新</span></div>
+    </div>
+  </header>
+
+  <div class="toolbar">
+    <div class="searchrow">
+      <div class="search">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#9a8a6e" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.5" y2="16.5"/></svg>
+        <input id="q" type="search" placeholder="タイトル・書名・タグで検索…（例: GraphQL、トランザクション、AWS）" autocomplete="off">
+      </div>
+      <span class="count" id="count">—</span>
+    </div>
+    <div class="chips" id="chips"></div>
+    <div class="activetag" id="activetag"></div>
+  </div>
+
+  <main id="shelves"></main>
+
+  <section class="slips reveal">
+    <div class="slip">
+      <span class="stamp">CREATE</span>
+      <h3>新しい一冊を作る</h3>
+      <p>Claudeに次の合言葉を送ると、いつもの体裁で記事を起こし、この書架にも自動で並べます。</p>
+      <code class="cmd">/create <span class="v">[書籍名 または 学習内容]</span> <span class="v">[--push]</span></code>
+      <ol>
+        <li>必要に応じて「今のレベル / 目標レベル」を選択式で確認</li>
+        <li><code>pages/&lt;棚&gt;/</code> に新しい記事HTMLを生成</li>
+        <li>この書架の ARTICLES と catalog.json に1件追記</li>
+        <li><code>--push</code> を付ければそのまま公開まで</li>
+      </ol>
+      <p class="note">※ 実行時は最新の index.html を一緒に渡してください。</p>
+    </div>
+    <div class="slip upd">
+      <span class="stamp" style="border-color:var(--green);color:var(--green)">UPDATE</span>
+      <h3>既存の一冊を直す</h3>
+      <p>記事を手直ししたいときはこちら。変える所・変えない所を先に確認してから編集します。</p>
+      <code class="cmd">/update <span class="v">[識別ワード or file名] [変更内容]</span> <span class="v">[--push]</span></code>
+      <ol>
+        <li>catalog.json で対象記事を一意に特定（例: 「sql指南書」）</li>
+        <li>変更する所・しない所を先に明文化、曖昧ならヒアリング</li>
+        <li>意図しない箇所は触らず外科的に編集</li>
+      </ol>
+      <p class="note">※ ほかに <code>/org</code>（整頓）・<code>/publish</code>（公開）も。詳しくは README。</p>
+    </div>
+  </section>
+
+  <footer>
+    <p>この書架は単一の <b>index.html</b>。蔵書データは末尾の <b>ARTICLES 配列</b>に格納し、1件追記するだけで棚に並びます。検索・分野フィルタは配列が増えても自動対応。記事本体は <b>pages/</b> 配下、相対リンクなので GitHub Pages にそのまま置けます。</p>
+    <p class="ff">分野：データの土台 / バックエンド&API / ソフトウェア設計 / クラウド&インフラ / 分散データシステム / 開発ツール</p>
+  </footer>
+
+</div>
+
+<script>
+/* ============================================================
+   蔵書データ ― 新規記事は ARTICLES:START 〜 END の間に1件追記。
+   shelf は SHELVES の id と一致させる。accent は背表紙の色。
+   vol はシリーズ物のときだけ付ける（省略可）。
+   ============================================================ */
+const SHELVES = [
+  {id:"db",     label:"データの土台",       sub:"Database & Query"},
+  {id:"backend",label:"バックエンド & API", sub:"Backend & API"},
+  {id:"design", label:"ソフトウェア設計",   sub:"Software Design"},
+  {id:"infra",  label:"クラウド & インフラ",sub:"Cloud & Infra"},
+  {id:"dist",   label:"分散データシステム", sub:"Distributed Data"},
+  {id:"tools",  label:"開発ツール",         sub:"Dev Tools"}
+];
+
+const ARTICLES = [
+/* ARTICLES:START ---------- 新規はこの行の直下〜END直前に追記 ---------- */
+  // まだ記事はありません。Claude に「/create [書籍名 または 学習内容]」と頼むと、
+  // ここに1件追記され、pages/<棚>/ に記事HTMLが生成されます。テンプレ例:
+  // {file:"pages/db/db-design.html", shelf:"db", accent:"#136b62", cat:"DATABASE",
+  //  title:"達人に学ぶ DB設計", book:"達人に学ぶDB設計徹底指南書", levelFrom:"初級", levelTo:"中級",
+  //  desc:"1〜2文の要約。", tags:["タグ1","タグ2","タグ3"]},
+/* ARTICLES:END ------------------------------------------------------- */
+];
+
+function esc(s){return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));}
+const root=document.getElementById("shelves"), qEl=document.getElementById("q"),
+      countEl=document.getElementById("count"), chipsEl=document.getElementById("chips"),
+      activeTagEl=document.getElementById("activetag");
+let state={q:"",shelf:"all",tag:null};
+
+function buildChips(){
+  const counts={}; ARTICLES.forEach(a=>counts[a.shelf]=(counts[a.shelf]||0)+1);
+  let html=`<span class="chip ${state.shelf==='all'?'on':''}" data-s="all">すべて<span class="c">${ARTICLES.length}</span></span>`;
+  SHELVES.forEach(sh=>{ if(!counts[sh.id]) return;
+    html+=`<span class="chip ${state.shelf===sh.id?'on':''}" data-s="${sh.id}">${esc(sh.label)}<span class="c">${counts[sh.id]}</span></span>`;});
+  chipsEl.innerHTML=html;
+  chipsEl.querySelectorAll(".chip").forEach(c=>c.onclick=()=>{state.shelf=c.dataset.s;render();});
+}
+function matches(a){
+  if(state.shelf!=="all" && a.shelf!==state.shelf) return false;
+  if(state.tag && !a.tags.includes(state.tag)) return false;
+  const q=state.q.trim().toLowerCase();
+  if(!q) return true;
+  const hay=(a.title+" "+a.book+" "+a.cat+" "+a.desc+" "+a.tags.join(" ")).toLowerCase();
+  return q.split(/\s+/).every(w=>hay.includes(w));
+}
+function cardHTML(a){
+  return `<a class="book" href="${esc(a.file)}" style="--sp:${esc(a.accent)}">
+    <span class="spine"></span>
+    <div class="book-body">
+      ${a.vol?`<span class="badge-vol">${esc(a.vol)}</span>`:""}
+      <div class="cat">${esc(a.cat)}</div>
+      <h3>${esc(a.title)}</h3>
+      <div class="bk">『${esc(a.book)}』</div>
+      <p class="dsc">${esc(a.desc)}</p>
+      <span class="lv">Lv <b>${esc(a.levelFrom)}</b> → <b>${esc(a.levelTo)}</b></span>
+      <div class="tags">${a.tags.map(t=>`<span class="tag" data-t="${esc(t)}">#${esc(t)}</span>`).join("")}</div>
+      <span class="open">開く →</span>
+    </div></a>`;
+}
+function render(){
+  const visible=ARTICLES.filter(matches);
+  countEl.textContent=`${visible.length} / ${ARTICLES.length} 件`;
+  buildChips();
+  if(state.tag){activeTagEl.style.display="block";
+    activeTagEl.innerHTML=`絞り込み中のタグ: <b>#${esc(state.tag)}</b><span class="x" id="clrtag">解除</span>`;
+    document.getElementById("clrtag").onclick=()=>{state.tag=null;render();};
+  } else activeTagEl.style.display="none";
+  root.innerHTML="";
+  if(!visible.length){
+    root.innerHTML = ARTICLES.length===0
+      ? `<div class="empty">まだ蔵書がありません。<br>Claude に <code>/create [書籍名 または 学習内容]</code> と頼んで、最初の一冊を書架に並べましょう。</div>`
+      : `<div class="empty">該当する記事がありません。検索語やフィルタを変えてみてください。</div>`;
+    return;
+  }
+  let no=0;
+  SHELVES.forEach(sh=>{
+    const items=visible.filter(a=>a.shelf===sh.id); if(!items.length) return;
+    no++;
+    const sec=document.createElement("section"); sec.className="shelf";
+    sec.innerHTML=`<div class="shelf-head"><span class="shelf-no">棚 ${no}</span><h2>${esc(sh.label)}</h2>
+      <span class="ssub">${esc(sh.sub)} · ${items.length}冊</span></div>
+      <div class="grid">${items.map(cardHTML).join("")}</div>`;
+    root.appendChild(sec);
+  });
+  root.querySelectorAll(".tag").forEach(t=>t.addEventListener("click",e=>{
+    e.preventDefault();e.stopPropagation();state.tag=t.dataset.t;state.shelf="all";window.scrollTo({top:0,behavior:"smooth"});render();
+  }));
+}
+qEl.addEventListener("input",()=>{state.q=qEl.value;render();});
+document.getElementById("st-count").textContent=ARTICLES.length;
+document.getElementById("st-shelf").textContent=SHELVES.filter(sh=>ARTICLES.some(a=>a.shelf===sh.id)).length;
+render();
+const ob=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add("in");ob.unobserve(e.target);}});},{threshold:0.05});
+document.querySelectorAll(".reveal").forEach(el=>ob.observe(el));
+</script>
+</body>
+</html>

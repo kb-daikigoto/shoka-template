@@ -11,8 +11,12 @@ GitHub Pages に公開します。中身は **単一の `index.html` ＋ 記事H
 
 1. このリポジトリの **`Use this template` → `Create a new repository`**（または fork）で自分のリポジトリを作る。
 2. ローカルに clone する。
-3. **GitHub Pages を有効化**（下の手順）。空の書架が公開されます。
-4. Claude に `skills/learning-library/SKILL.md` を読ませ、`/create [学びたいこと] --push` で最初の一冊を作って公開。
+3. Claude に `skills/learning-library/SKILL.md` を読ませ、**`/create [学びたいこと] --push`** で最初の一冊を作る。
+   - そのプロジェクトで**初めて** `--push`／`/publish` を打つと、**GitHub Pages の有効化（初デプロイ）まで自動**で行われ、
+     記事の生成・コミット・公開が一気に完了します（[GitHub CLI](https://cli.github.com/) が認証済みであること。`gh auth login`）。
+   - `gh` を使わない場合は、下の「GitHub Pages で公開する」を手動で実施してください。
+
+> 初回の公開（リポジトリ作成や Pages 有効化）は外向きの操作なので、Claude は内容を提示してから実行します。
 
 ## 構成
 
@@ -63,7 +67,7 @@ GitHub Pages に公開します。中身は **単一の `index.html` ＋ 記事H
 | `/create [書籍名 または 学習内容] [--push]` | 新記事を `pages/<棚>/` に作り、ハブ（ARTICLES）と catalog.json に追記 |
 | `/update [識別ワード or file名] [変更内容] [--push]` | catalog.json で対象記事を一意に特定し、変更範囲を確認のうえ外科的に編集 |
 | `/org [--push]` | `pages/` を棚別サブディレクトリに整頓し、catalog.json を再生成して参照パスを揃える |
-| `/publish [メッセージ]` | 変更を commit & push し、公開サイトに反映（git リポジトリのある環境専用） |
+| `/publish [メッセージ]` | 変更を commit & push し公開サイトに反映。**初回はリポジトリ作成＋GitHub Pages 有効化まで自動**（要 `gh` 認証） |
 
 `/update` の第1引数は正確なファイル名でなくてよい。記事を一意に特定できる言葉でも解決する。
 例: `/update sql指南書 〇〇に変更して` → 該当記事を特定して編集。
